@@ -1,0 +1,11 @@
+fastapi
+groq
+httpx
+pydantic
+python-dotenv
+SQLAlchemy
+uvicorn
+python-multipart
+scikit-learn
+nltk
+joblib

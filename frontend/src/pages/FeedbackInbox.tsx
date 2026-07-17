@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MessageSquare, Filter, SortDesc, AlertCircle, Sparkles, Inbox } from 'lucide-react';
-import { getFeedback } from '../services/api';
+import { MessageSquare, Filter, SortDesc, AlertCircle, Sparkles, Inbox, Bookmark } from 'lucide-react';
+import { getFeedback, createSavedView } from '../services/api';
 
 interface FeedbackItem {
   id: number;
@@ -18,6 +19,7 @@ interface FeedbackItem {
 type SortOption = 'newest' | 'priority';
 
 export default function FeedbackInbox() {
+  const [searchParams] = useSearchParams();
   const [feedback, setFeedback] = useState<FeedbackItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,6 +30,24 @@ export default function FeedbackInbox() {
   
   // Sorting
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+  
+  // Save view state
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [viewName, setViewName] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  // Apply filters from URL params on mount
+  useEffect(() => {
+    const sentiment = searchParams.get('sentiment');
+    const type = searchParams.get('type');
+    
+    if (sentiment) {
+      setSentimentFilter(sentiment);
+    }
+    if (type) {
+      setTypeFilter(type);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     loadFeedback();
@@ -79,6 +99,35 @@ export default function FeedbackInbox() {
     return 'text-emerald-400';
   };
 
+  const hasActiveFilters = () => {
+    return sentimentFilter !== 'all' || typeFilter !== 'all';
+  };
+
+  const handleSaveView = async () => {
+    if (!viewName.trim()) {
+      alert('Please enter a name for this view');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await createSavedView({
+        name: viewName.trim(),
+        sentiment: sentimentFilter !== 'all' ? sentimentFilter : undefined,
+        feedback_type: typeFilter !== 'all' ? typeFilter : undefined
+      });
+      
+      setShowSaveDialog(false);
+      setViewName('');
+      alert('View saved successfully!');
+    } catch (err) {
+      console.error('Failed to save view:', err);
+      alert('Failed to save view');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -109,12 +158,88 @@ export default function FeedbackInbox() {
     <div className="space-y-6">
       {/* Header */}
       <header className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Inbox className="w-8 h-8 text-indigo-400" />
-          <h1 className="text-3xl font-bold text-white">Feedback Inbox</h1>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-3">
+            <Inbox className="w-8 h-8 text-indigo-400" />
+            <h1 className="text-3xl font-bold text-white">Feedback Inbox</h1>
+          </div>
+          {hasActiveFilters() && (
+            <button
+              onClick={() => setShowSaveDialog(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors text-sm font-medium"
+            >
+              <Bookmark className="w-4 h-4" />
+              Save Current Filters
+            </button>
+          )}
         </div>
         <p className="text-muted-text">View and filter individual feedback records across all batches.</p>
       </header>
+
+      {/* Save View Dialog */}
+      {showSaveDialog && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowSaveDialog(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="glass-panel p-6 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-bold text-white mb-4">Save View</h2>
+            <p className="text-slate-400 mb-4">Give this filter combination a name:</p>
+            
+            <input
+              type="text"
+              value={viewName}
+              onChange={(e) => setViewName(e.target.value)}
+              placeholder="e.g., High Priority Complaints"
+              className="w-full px-4 py-3 bg-dark-bg border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors mb-4"
+              autoFocus
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSaveView();
+                }
+              }}
+            />
+
+            <div className="bg-dark-bg/50 p-4 rounded-lg mb-4">
+              <p className="text-sm text-slate-400 mb-2">Active Filters:</p>
+              <div className="space-y-1">
+                {sentimentFilter !== 'all' && (
+                  <p className="text-sm text-slate-300">• Sentiment: {sentimentFilter}</p>
+                )}
+                {typeFilter !== 'all' && (
+                  <p className="text-sm text-slate-300">• Type: {typeFilter === 'complaint' ? 'Complaints' : 'Feature Requests'}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleSaveView}
+                disabled={saving || !viewName.trim()}
+                className="flex-1 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium"
+              >
+                {saving ? 'Saving...' : 'Save View'}
+              </button>
+              <button
+                onClick={() => {
+                  setShowSaveDialog(false);
+                  setViewName('');
+                }}
+                className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
 
       {/* Filters and Sorting */}
       <div className="glass-panel p-6">

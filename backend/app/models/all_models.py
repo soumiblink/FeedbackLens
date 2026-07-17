@@ -58,3 +58,50 @@ class RoutingLog(Base):
     estimated_cost = Column(Float)
     tokens_used = Column(Integer)
     status = Column(String) # success, fallback, failed
+
+class RoadmapItem(Base):
+    __tablename__ = "roadmap_items"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    topic = Column(String, nullable=False, index=True)
+    priority_score = Column(Float, default=0.0)
+    priority_level = Column(String, nullable=False) # high, medium, low
+    release_name = Column(String, nullable=False)
+    quarter = Column(String, nullable=False)
+    status = Column(String, nullable=False, default="Backlog") # Backlog, Planned, In Progress, Released
+    owner = Column(String, nullable=True)
+    business_goal = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+class Decision(Base):
+    __tablename__ = "decisions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    topic = Column(String, nullable=False, unique=True, index=True)
+    decision_notes = Column(Text, nullable=True)
+    status = Column(String, nullable=False, default="Investigating") # Investigating, Validated, Planned, In Progress, Released, Rejected
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+class SavedView(Base):
+    __tablename__ = "saved_views"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    sentiment = Column(String, nullable=True) # positive, negative, neutral
+    feedback_type = Column(String, nullable=True) # complaint, feature_request
+    customer_segment = Column(String, nullable=True) # Enterprise, SMB, Education, Paid, General Users
+    priority_level = Column(String, nullable=True) # high, medium, low
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+class ChangelogEntry(Base):
+    __tablename__ = "changelog_entries"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    version = Column(String, nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    related_topics = Column(JSON, nullable=True) # List of topic strings
+    release_batch_id = Column(Integer, ForeignKey("feedback_batches.id"), nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

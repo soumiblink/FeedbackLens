@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, UploadCloud, Brain, Activity, FileText, Menu, X, Inbox } from 'lucide-react';
+import { LayoutDashboard, UploadCloud, Brain, Activity, FileText, Menu, X, Inbox, ListOrdered, GitCompare, Map, Users, Bookmark, History } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -10,6 +10,16 @@ import MemoryTimeline from './pages/MemoryTimeline';
 import RuntimeIntelligence from './pages/RuntimeIntelligence';
 import Reports from './pages/Reports';
 import FeedbackInbox from './pages/FeedbackInbox';
+import Prioritization from './pages/Prioritization';
+import OpportunityDetail from './pages/OpportunityDetail';
+import ReleaseImpact from './pages/ReleaseImpact';
+import RoadmapPlanner from './pages/RoadmapPlanner';
+import ProductHealth from './pages/ProductHealth';
+import CustomerSegments from './pages/CustomerSegments';
+import CustomerSegmentDetail from './pages/CustomerSegmentDetail';
+import DecisionCenter from './pages/DecisionCenter';
+import SavedViews from './pages/SavedViews';
+import ProductChangelog from './pages/ProductChangelog';
 
 function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
@@ -20,8 +30,15 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
   
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Product Health', path: '/product-health', icon: Activity },
     { name: 'Upload Feedback', path: '/upload', icon: UploadCloud },
     { name: 'Feedback Inbox', path: '/feedback', icon: Inbox },
+    { name: 'Saved Views', path: '/saved-views', icon: Bookmark },
+    { name: 'Prioritization', path: '/prioritization', icon: ListOrdered },
+    { name: 'Customer Segments', path: '/customers', icon: Users },
+    { name: 'Roadmap Planner', path: '/roadmap', icon: Map },
+    { name: 'Product Changelog', path: '/changelog', icon: History },
+    { name: 'Release Impact', path: '/releases', icon: GitCompare },
     { name: 'Hindsight Memory', path: '/memory', icon: Brain },
     { name: 'cascadeflow Runtime', path: '/runtime', icon: Activity },
     { name: 'Executive Reports', path: '/reports', icon: FileText },
@@ -118,8 +135,18 @@ function App() {
             <div className="max-w-7xl mx-auto">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/product-health" element={<ProductHealth />} />
                 <Route path="/upload" element={<Upload />} />
                 <Route path="/feedback" element={<FeedbackInbox />} />
+                <Route path="/saved-views" element={<SavedViews />} />
+                <Route path="/prioritization" element={<Prioritization />} />
+                <Route path="/opportunity/:topic" element={<OpportunityDetail />} />
+                <Route path="/decision/:topic" element={<DecisionCenter />} />
+                <Route path="/customers" element={<CustomerSegments />} />
+                <Route path="/customers/:segment" element={<CustomerSegmentDetail />} />
+                <Route path="/roadmap" element={<RoadmapPlanner />} />
+                <Route path="/changelog" element={<ProductChangelog />} />
+                <Route path="/releases" element={<ReleaseImpact />} />
                 <Route path="/memory" element={<MemoryTimeline />} />
                 <Route path="/runtime" element={<RuntimeIntelligence />} />
                 <Route path="/reports" element={<Reports />} />

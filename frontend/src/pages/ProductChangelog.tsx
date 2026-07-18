@@ -14,6 +14,9 @@ import {
   getReleaseImpact,
   compareReleases
 } from '../services/api';
+import { SkeletonCard } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
+import ErrorState from '../components/ErrorState';
 
 interface ChangelogEntry {
   id: number;
@@ -52,6 +55,7 @@ export default function ProductChangelog() {
   const [batches, setBatches] = useState<ReleaseBatch[]>([]);
   const [metrics, setMetrics] = useState<Record<number, ReleaseMetrics>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   
   const [showDialog, setShowDialog] = useState(false);
   const [editingEntry, setEditingEntry] = useState<ChangelogEntry | null>(null);
@@ -70,6 +74,7 @@ export default function ProductChangelog() {
 
   const loadData = async () => {
     setLoading(true);
+    setError(false);
     try {
       const [changelogData, batchData] = await Promise.all([
         getChangelog(),
@@ -82,6 +87,7 @@ export default function ProductChangelog() {
       await loadMetrics(changelogData, batchData);
     } catch (err) {
       console.error('Failed to load changelog:', err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -204,10 +210,26 @@ export default function ProductChangelog() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      <div className="space-y-6">
+        <div className="glass-panel p-8 animate-pulse">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="h-10 bg-slate-700/50 rounded w-96 mb-3"></div>
+              <div className="h-6 bg-slate-700/50 rounded w-full max-w-2xl"></div>
+            </div>
+          </div>
+        </div>
+        <div className="space-y-6">
+          {[...Array(3)].map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
       </div>
     );
+  }
+
+  if (error) {
+    return <ErrorState onRetry={loadData} />;
   }
 
   return (
@@ -362,26 +384,16 @@ export default function ProductChangelog() {
 
       {/* Timeline */}
       {entries.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-panel p-12 text-center"
-        >
-          <div className="max-w-md mx-auto">
-            <Package className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-white mb-3">No releases documented yet</h2>
-            <p className="text-slate-400 mb-6">
-              Start documenting your product releases to track customer feedback trends over time.
-            </p>
-            <button
-              onClick={handleCreate}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium"
-            >
-              <Plus className="w-5 h-5" />
-              Create First Release
-            </button>
-          </div>
-        </motion.div>
+        <EmptyState
+          icon={<Package className="w-16 h-16" />}
+          title="No releases documented yet"
+          description="Start documenting your product releases to track customer feedback trends over time."
+          action={{
+            label: "Create First Release",
+            onClick: handleCreate,
+            icon: <Plus className="w-4 h-4" />
+          }}
+        />
       ) : (
         <div className="space-y-6">
           {entries.map((entry, idx) => {

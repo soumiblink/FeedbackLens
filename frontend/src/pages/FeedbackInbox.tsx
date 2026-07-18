@@ -1,8 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MessageSquare, Filter, SortDesc, AlertCircle, Sparkles, Inbox, Bookmark } from 'lucide-react';
+import { MessageSquare, Filter, SortDesc, AlertCircle, Sparkles, Inbox, Bookmark, Upload } from 'lucide-react';
 import { getFeedback, createSavedView } from '../services/api';
+import { SkeletonList } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
+import ErrorState from '../components/ErrorState';
 
 interface FeedbackItem {
   id: number;
@@ -19,10 +22,11 @@ interface FeedbackItem {
 type SortOption = 'newest' | 'priority';
 
 export default function FeedbackInbox() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [feedback, setFeedback] = useState<FeedbackItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(false);
   
   // Filters
   const [sentimentFilter, setSentimentFilter] = useState<string>('all');
@@ -55,7 +59,7 @@ export default function FeedbackInbox() {
 
   const loadFeedback = async () => {
     setLoading(true);
-    setError(null);
+    setError(false);
     try {
       const sentimentParam = sentimentFilter !== 'all' ? sentimentFilter : undefined;
       const typeParam = typeFilter === 'complaint' ? 'complaint' : typeFilter === 'feature_request' ? 'feature_request' : undefined;
@@ -64,7 +68,7 @@ export default function FeedbackInbox() {
       setFeedback(data);
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to load feedback');
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -130,28 +134,25 @@ export default function FeedbackInbox() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      <div className="space-y-6">
+        <div className="mb-8">
+          <div className="h-8 bg-slate-700/50 rounded w-64 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-slate-700/50 rounded w-96 animate-pulse"></div>
+        </div>
+        <div className="glass-panel p-6 animate-pulse">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-20 bg-slate-700/30 rounded"></div>
+            ))}
+          </div>
+        </div>
+        <SkeletonList />
       </div>
     );
   }
 
   if (error) {
-    return (
-      <div className="flex h-full items-center justify-center pt-20">
-        <div className="bg-rose-500/10 border border-rose-500/20 p-8 rounded-xl max-w-lg text-center">
-          <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">Error Loading Feedback</h2>
-          <p className="text-slate-300 mb-4">{error}</p>
-          <button 
-            onClick={loadFeedback}
-            className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
+    return <ErrorState onRetry={loadFeedback} />;
   }
 
   return (
@@ -306,19 +307,18 @@ export default function FeedbackInbox() {
 
       {/* Empty State */}
       {sortedFeedback.length === 0 ? (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-panel p-12 text-center"
-        >
-          <MessageSquare className="w-16 h-16 text-slate-500 mx-auto mb-4 opacity-50" />
-          <h3 className="text-xl font-medium text-slate-300 mb-2">No Feedback Found</h3>
-          <p className="text-slate-500">
-            {sentimentFilter !== 'all' || typeFilter !== 'all' 
-              ? 'Try adjusting your filters to see more results.'
-              : 'Upload feedback batches to see them here.'}
-          </p>
-        </motion.div>
+        <EmptyState
+          icon={<MessageSquare className="w-16 h-16" />}
+          title={sentimentFilter !== 'all' || typeFilter !== 'all' ? "No feedback matches your filters" : "No customer feedback found"}
+          description={sentimentFilter !== 'all' || typeFilter !== 'all' 
+            ? "Try adjusting your filters to see more results."
+            : "Upload feedback batches to start viewing individual customer feedback items."}
+          action={sentimentFilter === 'all' && typeFilter === 'all' ? {
+            label: "Upload Feedback",
+            onClick: () => navigate('/upload'),
+            icon: <Upload className="w-4 h-4" />
+          } : undefined}
+        />
       ) : (
         /* Feedback Items */
         <div className="space-y-4">

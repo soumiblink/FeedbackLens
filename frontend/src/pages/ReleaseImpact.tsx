@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { GitCompare, AlertCircle, TrendingUp, TrendingDown, Minus, Calendar, Package, Award } from 'lucide-react';
 import { getReleaseImpact, compareReleases } from '../services/api';
+import { SkeletonMetricCard } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
+import ErrorState from '../components/ErrorState';
 
 interface ReleaseBatch {
   batch_id: number;
@@ -43,7 +46,7 @@ export default function ReleaseImpact() {
   const [comparison, setComparison] = useState<ComparisonResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [comparing, setComparing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     loadBatches();
@@ -51,7 +54,7 @@ export default function ReleaseImpact() {
 
   const loadBatches = async () => {
     setLoading(true);
-    setError(null);
+    setError(false);
     try {
       const data = await getReleaseImpact();
       setBatches(data);
@@ -63,7 +66,7 @@ export default function ReleaseImpact() {
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to load release batches');
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -71,23 +74,22 @@ export default function ReleaseImpact() {
 
   const handleCompare = async () => {
     if (beforeBatch === null || afterBatch === null) {
-      setError('Please select both releases to compare');
+      alert('Please select both releases to compare');
       return;
     }
 
     if (beforeBatch === afterBatch) {
-      setError('Please select two different releases');
+      alert('Please select two different releases');
       return;
     }
 
     setComparing(true);
-    setError(null);
     try {
       const data = await compareReleases(beforeBatch, afterBatch);
       setComparison(data);
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to compare releases');
+      alert(err.response?.data?.detail || 'Failed to compare releases');
     } finally {
       setComparing(false);
     }
@@ -154,26 +156,41 @@ export default function ReleaseImpact() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      <div className="space-y-6">
+        <div className="mb-8">
+          <div className="h-8 bg-slate-700/50 rounded w-80 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-slate-700/50 rounded w-full max-w-3xl animate-pulse"></div>
+        </div>
+        <div className="glass-panel p-6 animate-pulse">
+          <div className="h-6 bg-slate-700/50 rounded w-64 mb-4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="h-14 bg-slate-700/30 rounded"></div>
+            <div className="h-14 bg-slate-700/30 rounded"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (error && !comparison) {
+  if (error) {
+    return <ErrorState onRetry={loadBatches} />;
+  }
+
+  if (batches.length < 2) {
     return (
-      <div className="flex h-full items-center justify-center pt-20">
-        <div className="bg-rose-500/10 border border-rose-500/20 p-8 rounded-xl max-w-lg text-center">
-          <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">Error Loading Releases</h2>
-          <p className="text-slate-300 mb-4">{error}</p>
-          <button 
-            onClick={loadBatches}
-            className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
+      <div className="space-y-6">
+        <header className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <GitCompare className="w-8 h-8 text-indigo-400" />
+            <h1 className="text-3xl font-bold text-white">Release Impact Analysis</h1>
+          </div>
+          <p className="text-muted-text">Compare customer feedback before and after product releases to evaluate impact on product health.</p>
+        </header>
+        <EmptyState
+          icon={<GitCompare className="w-16 h-16" />}
+          title="Upload multiple releases to compare"
+          description="Upload at least two feedback batches to compare release impact and track how your product changes affect customer sentiment."
+        />
       </div>
     );
   }

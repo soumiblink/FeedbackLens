@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Activity, AlertCircle, TrendingUp, TrendingDown, Minus, ThumbsUp, ThumbsDown, AlertTriangle, Sparkles } from 'lucide-react';
+import { Activity, AlertCircle, TrendingUp, TrendingDown, Minus, ThumbsUp, ThumbsDown, AlertTriangle, Sparkles, Upload } from 'lucide-react';
 import { getProductHealth } from '../services/api';
+import { SkeletonMetricCard } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
+import ErrorState from '../components/ErrorState';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductHealthData {
   overall_health_score: number;
@@ -17,9 +21,10 @@ interface ProductHealthData {
 }
 
 export default function ProductHealth() {
+  const navigate = useNavigate();
   const [healthData, setHealthData] = useState<ProductHealthData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     loadHealthData();
@@ -27,13 +32,13 @@ export default function ProductHealth() {
 
   const loadHealthData = async () => {
     setLoading(true);
-    setError(null);
+    setError(false);
     try {
       const data = await getProductHealth();
       setHealthData(data);
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to load product health data');
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -147,27 +152,49 @@ export default function ProductHealth() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      <div className="space-y-6">
+        <div className="mb-8">
+          <div className="h-8 bg-slate-700/50 rounded w-72 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-slate-700/50 rounded w-96 animate-pulse"></div>
+        </div>
+        <div className="glass-panel p-8 animate-pulse">
+          <div className="flex items-center gap-8">
+            <div className="w-48 h-48 bg-slate-700/30 rounded-full"></div>
+            <div className="flex-1 space-y-4">
+              <div className="h-8 bg-slate-700/50 rounded w-64"></div>
+              <div className="h-4 bg-slate-700/50 rounded w-48"></div>
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <div className="h-16 bg-slate-700/30 rounded-lg"></div>
+                <div className="h-16 bg-slate-700/30 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <SkeletonMetricCard key={i} />
+          ))}
+        </div>
       </div>
     );
   }
 
-  if (error || !healthData) {
+  if (error) {
+    return <ErrorState onRetry={loadHealthData} />;
+  }
+
+  if (!healthData || healthData.batches_analyzed === 0) {
     return (
-      <div className="flex h-full items-center justify-center pt-20">
-        <div className="bg-rose-500/10 border border-rose-500/20 p-8 rounded-xl max-w-lg text-center">
-          <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">Error Loading Health Data</h2>
-          <p className="text-slate-300 mb-4">{error}</p>
-          <button 
-            onClick={loadHealthData}
-            className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
+      <EmptyState
+        icon={<Activity className="w-16 h-16" />}
+        title="No feedback available for health analysis"
+        description="Upload feedback batches to start tracking product health metrics based on customer sentiment."
+        action={{
+          label: "Upload Feedback",
+          onClick: () => navigate('/upload'),
+          icon: <Upload className="w-4 h-4" />
+        }}
+      />
     );
   }
 
@@ -410,20 +437,6 @@ export default function ProductHealth() {
         </div>
       </motion.div>
 
-      {/* Empty State for No Data */}
-      {healthData.batches_analyzed === 0 && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-panel p-12 text-center"
-        >
-          <Activity className="w-16 h-16 text-slate-500 mx-auto mb-4 opacity-50" />
-          <h3 className="text-xl font-medium text-slate-300 mb-2">No Feedback Data Yet</h3>
-          <p className="text-slate-500">
-            Upload feedback batches to start tracking product health metrics.
-          </p>
-        </motion.div>
-      )}
     </div>
   );
 }

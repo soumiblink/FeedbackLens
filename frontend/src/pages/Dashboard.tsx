@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis } from 'recharts';
-import { MessageSquare, ThumbsUp, AlertTriangle, TrendingUp, Trash2, MinusCircle, Activity } from 'lucide-react';
+import { MessageSquare, ThumbsUp, AlertTriangle, TrendingUp, Trash2, MinusCircle, Activity, Upload } from 'lucide-react';
 import { getDashboardStats, resetData, getModelStats } from '../services/api';
+import { SkeletonMetricCard } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
+import ErrorState from '../components/ErrorState';
+import { useNavigate } from 'react-router-dom';
 
 const COLORS = ['#10b981', '#6366f1', '#ef4444'];
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<any>(null);
   const [modelStats, setModelStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     loadStats();
@@ -30,6 +36,7 @@ export default function Dashboard() {
 
   const loadStats = async () => {
     try {
+      setError(false);
       const [data, mStats] = await Promise.all([
         getDashboardStats(),
         getModelStats()
@@ -38,6 +45,7 @@ export default function Dashboard() {
       setModelStats(mStats);
     } catch (error) {
       console.error(error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -45,9 +53,46 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      <div className="space-y-6">
+        <div className="mb-8">
+          <div className="h-8 bg-slate-700/50 rounded w-64 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-slate-700/50 rounded w-96 animate-pulse"></div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+          {[...Array(5)].map((_, i) => (
+            <SkeletonMetricCard key={i} />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="glass-panel p-6 animate-pulse">
+            <div className="h-6 bg-slate-700/50 rounded w-48 mb-6"></div>
+            <div className="h-64 bg-slate-700/30 rounded"></div>
+          </div>
+          <div className="glass-panel p-6 animate-pulse">
+            <div className="h-6 bg-slate-700/50 rounded w-48 mb-6"></div>
+            <div className="h-64 bg-slate-700/30 rounded"></div>
+          </div>
+        </div>
       </div>
+    );
+  }
+
+  if (error) {
+    return <ErrorState onRetry={loadStats} />;
+  }
+
+  if (!stats || stats.total_feedback === 0) {
+    return (
+      <EmptyState
+        icon={<Upload className="w-16 h-16" />}
+        title="No feedback has been uploaded yet"
+        description="Upload your first dataset to start analyzing customer sentiment and identifying opportunities."
+        action={{
+          label: "Upload Feedback",
+          onClick: () => navigate('/upload'),
+          icon: <Upload className="w-4 h-4" />
+        }}
+      />
     );
   }
 

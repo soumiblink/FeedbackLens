@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Map, Plus, Edit2, Trash2, X, AlertCircle, Calendar, User, Target, Tag } from 'lucide-react';
 import { getRoadmap, createRoadmapItem, updateRoadmapItem, deleteRoadmapItem } from '../services/api';
 import { useLocation } from 'react-router-dom';
+import { SkeletonMetricCard, SkeletonCard } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
+import ErrorState from '../components/ErrorState';
 
 interface RoadmapItem {
   id: number;
@@ -33,7 +36,7 @@ export default function RoadmapPlanner() {
   const location = useLocation();
   const [items, setItems] = useState<RoadmapItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<RoadmapItem | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -73,13 +76,13 @@ export default function RoadmapPlanner() {
 
   const loadRoadmap = async () => {
     setLoading(true);
-    setError(null);
+    setError(false);
     try {
       const data = await getRoadmap();
       setItems(data);
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to load roadmap');
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -121,7 +124,6 @@ export default function RoadmapPlanner() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     try {
       if (editingItem) {
@@ -151,7 +153,7 @@ export default function RoadmapPlanner() {
       loadRoadmap();
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to save roadmap item');
+      alert(err.response?.data?.detail || 'Failed to save roadmap item');
     }
   };
 
@@ -165,7 +167,7 @@ export default function RoadmapPlanner() {
       loadRoadmap();
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to delete roadmap item');
+      alert(err.response?.data?.detail || 'Failed to delete roadmap item');
     }
   };
 
@@ -213,10 +215,27 @@ export default function RoadmapPlanner() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      <div className="space-y-6">
+        <div className="mb-8">
+          <div className="h-8 bg-slate-700/50 rounded w-72 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-slate-700/50 rounded w-96 animate-pulse"></div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <SkeletonMetricCard key={i} />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(8)].map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
       </div>
     );
+  }
+
+  if (error) {
+    return <ErrorState onRetry={loadRoadmap} />;
   }
 
   return (
@@ -239,13 +258,7 @@ export default function RoadmapPlanner() {
         <p className="text-muted-text">Convert validated opportunities into actionable product plans.</p>
       </header>
 
-      {/* Error Display */}
-      {error && (
-        <div className="bg-rose-500/10 border border-rose-500/20 p-4 rounded-lg flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-rose-300">{error}</p>
-        </div>
-      )}
+      {/* Error Display - removed since we're using ErrorState component at top level */}
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -360,24 +373,16 @@ export default function RoadmapPlanner() {
 
       {/* Empty State */}
       {items.length === 0 && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-panel p-12 text-center"
-        >
-          <Map className="w-16 h-16 text-slate-500 mx-auto mb-4 opacity-50" />
-          <h3 className="text-xl font-medium text-slate-300 mb-2">No Roadmap Items Yet</h3>
-          <p className="text-slate-500 mb-4">
-            Start planning by adding opportunities to your product roadmap.
-          </p>
-          <button
-            onClick={() => handleOpenModal()}
-            className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg transition-colors inline-flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Add Your First Item
-          </button>
-        </motion.div>
+        <EmptyState
+          icon={<Map className="w-16 h-16" />}
+          title="No roadmap items yet"
+          description="Start planning by adding opportunities to your product roadmap."
+          action={{
+            label: "Add Your First Item",
+            onClick: () => handleOpenModal(),
+            icon: <Plus className="w-4 h-4" />
+          }}
+        />
       )}
 
       {/* Add/Edit Modal */}

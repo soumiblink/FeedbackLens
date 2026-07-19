@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, AlertCircle, TrendingUp, AlertTriangle, Sparkles } from 'lucide-react';
 import { getCustomerSegmentDetail } from '../services/api';
+import { SkeletonMetricCard, SkeletonList } from '../components/Skeleton';
+import ErrorState from '../components/ErrorState';
 
 interface TopicMention {
   topic: string;
@@ -38,7 +40,7 @@ export default function CustomerSegmentDetail() {
   const navigate = useNavigate();
   const [detail, setDetail] = useState<SegmentDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (segment) {
@@ -50,13 +52,13 @@ export default function CustomerSegmentDetail() {
     if (!segment) return;
     
     setLoading(true);
-    setError(null);
+    setError(false);
     try {
       const data = await getCustomerSegmentDetail(segment);
       setDetail(data);
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to load segment details');
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -107,28 +109,47 @@ export default function CustomerSegmentDetail() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      <div className="space-y-6">
+        <div className="h-10 bg-slate-700/50 rounded w-48 animate-pulse"></div>
+        <div className="glass-panel p-8 animate-pulse">
+          <div className="flex items-start justify-between">
+            <div className="h-10 bg-slate-700/50 rounded w-96 mb-4"></div>
+            <div className="h-16 bg-slate-700/50 rounded w-32"></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <SkeletonMetricCard key={i} />
+          ))}
+        </div>
+        <div className="glass-panel p-6 animate-pulse">
+          <div className="h-6 bg-slate-700/50 rounded w-48 mb-6"></div>
+          <SkeletonList />
+        </div>
       </div>
     );
   }
 
-  if (error || !detail) {
+  if (error) {
     return (
-      <div className="flex h-full items-center justify-center pt-20">
-        <div className="bg-rose-500/10 border border-rose-500/20 p-8 rounded-xl max-w-lg text-center">
-          <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">Error Loading Details</h2>
-          <p className="text-slate-300 mb-4">{error}</p>
-          <button 
-            onClick={() => navigate('/customers')}
-            className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg transition-colors"
-          >
-            Back to Segments
-          </button>
-        </div>
+      <div className="space-y-6">
+        <button
+          onClick={() => navigate('/customers')}
+          className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back to Customer Segments</span>
+        </button>
+        <ErrorState 
+          onRetry={loadDetail}
+          message="We couldn't load the segment details. Please try again."
+        />
       </div>
     );
+  }
+
+  if (!detail) {
+    return null;
   }
 
   return (

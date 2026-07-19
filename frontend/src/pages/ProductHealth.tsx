@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Activity, AlertCircle, TrendingUp, TrendingDown, Minus, ThumbsUp, ThumbsDown, AlertTriangle, Sparkles, Upload } from 'lucide-react';
+import { Activity, TrendingUp, TrendingDown, Minus, ThumbsUp, ThumbsDown, AlertTriangle, Sparkles, Upload } from 'lucide-react';
 import { getProductHealth } from '../services/api';
 import { SkeletonMetricCard } from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';

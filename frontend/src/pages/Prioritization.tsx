@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ListOrdered, Filter, AlertCircle, ChevronDown, ChevronUp, Info, ExternalLink, Plus, Upload } from 'lucide-react';
+import { ListOrdered, Filter, ChevronDown, ChevronUp, Info, ExternalLink, Plus, Upload } from 'lucide-react';
 import { getOpportunities } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { SkeletonMetricCard, SkeletonList } from '../components/Skeleton';

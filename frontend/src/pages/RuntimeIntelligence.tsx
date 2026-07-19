@@ -4,6 +4,8 @@ import { Activity, Server, Cpu, DollarSign, Zap } from 'lucide-react';
 import { getRoutingLogs } from '../services/api';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { SkeletonMetricCard, SkeletonTable } from '../components/Skeleton';
+import ErrorState from '../components/ErrorState';
 
 function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
@@ -12,17 +14,21 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 export default function RuntimeIntelligence() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     loadLogs();
   }, []);
 
   const loadLogs = async () => {
+    setLoading(true);
+    setError(false);
     try {
       const data = await getRoutingLogs();
       setLogs(data);
     } catch (error) {
       console.error(error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -30,8 +36,34 @@ export default function RuntimeIntelligence() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin" />
+      <div className="space-y-8">
+        <div>
+          <div className="h-8 bg-slate-700/50 rounded w-96 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-slate-700/50 rounded w-full max-w-2xl animate-pulse"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <SkeletonMetricCard key={i} />
+          ))}
+        </div>
+        <SkeletonTable />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <header>
+          <div className="flex items-center gap-3 mb-2">
+            <Activity className="w-8 h-8 text-cyan-400" />
+            <h1 className="text-3xl font-bold text-white">cascadeflow Runtime Intelligence</h1>
+          </div>
+          <p className="text-muted-text">
+            Live audit trail of model routing, budget enforcement, and fallback mechanics.
+          </p>
+        </header>
+        <ErrorState onRetry={loadLogs} />
       </div>
     );
   }

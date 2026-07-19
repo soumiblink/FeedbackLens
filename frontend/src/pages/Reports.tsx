@@ -1,22 +1,30 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Download, TrendingUp, AlertTriangle, Lightbulb } from 'lucide-react';
+import { FileText, Download, TrendingUp, AlertTriangle, Lightbulb, Upload } from 'lucide-react';
 import { getReport } from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import EmptyState from '../components/EmptyState';
+import ErrorState from '../components/ErrorState';
 
 export default function Reports() {
+  const navigate = useNavigate();
   const [report, setReport] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     loadReport();
   }, []);
 
   const loadReport = async () => {
+    setLoading(true);
+    setError(false);
     try {
       const data = await getReport();
       setReport(data);
     } catch (error) {
       console.error(error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -28,11 +36,44 @@ export default function Reports() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      <div className="max-w-4xl mx-auto space-y-8 pb-12">
+        <div className="flex justify-between items-end">
+          <div>
+            <div className="h-8 bg-slate-700/50 rounded w-72 mb-2 animate-pulse"></div>
+            <div className="h-4 bg-slate-700/50 rounded w-96 animate-pulse"></div>
+          </div>
+        </div>
+        <div className="glass-panel p-8 md:p-12 animate-pulse">
+          <div className="space-y-8">
+            <div className="h-6 bg-slate-700/50 rounded w-3/4"></div>
+            <div className="h-4 bg-slate-700/50 rounded w-full"></div>
+            <div className="h-4 bg-slate-700/50 rounded w-5/6"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="h-40 bg-slate-700/30 rounded"></div>
+              <div className="h-40 bg-slate-700/30 rounded"></div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-8 pb-12">
+        <header>
+          <div className="flex items-center gap-3 mb-2">
+            <FileText className="w-8 h-8 text-indigo-400" />
+            <h1 className="text-3xl font-bold text-white">Executive Report</h1>
+          </div>
+          <p className="text-muted-text">Strategic recommendations synthesized from historical memory.</p>
+        </header>
+        <ErrorState onRetry={loadReport} />
+      </div>
+    );
+  }
+
+  const hasInsufficientData = !report || report.report?.includes('Not enough data');
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12 print:max-w-full print:bg-white print:text-black">
@@ -47,7 +88,7 @@ export default function Reports() {
         
         <button 
           onClick={handleExportPDF}
-          disabled={!report || report.report?.includes('Not enough data')}
+          disabled={hasInsufficientData}
           className="bg-dark-surface border border-dark-border hover:bg-slate-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
         >
           <Download className="w-4 h-4" />
@@ -55,12 +96,17 @@ export default function Reports() {
         </button>
       </header>
 
-      {(!report || report.report?.includes('Not enough data')) ? (
-        <div className="glass-panel p-12 text-center print:hidden">
-          <FileText className="w-12 h-12 text-slate-500 mx-auto mb-4 opacity-50" />
-          <h3 className="text-xl font-medium text-slate-300">Insufficient Data</h3>
-          <p className="text-slate-500 mt-2">Upload more feedback batches to generate strategic executive reports.</p>
-        </div>
+      {hasInsufficientData ? (
+        <EmptyState
+          icon={<FileText className="w-16 h-16" />}
+          title="Insufficient data for executive report"
+          description="Upload more feedback batches to generate strategic executive reports with insights and recommendations."
+          action={{
+            label: "Upload Feedback",
+            onClick: () => navigate('/upload'),
+            icon: <Upload className="w-4 h-4" />
+          }}
+        />
       ) : (
         <motion.div 
           initial={{ opacity: 0, y: 20 }}

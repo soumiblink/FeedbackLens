@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Clock, Trash2 } from 'lucide-react';
+import { Brain, Clock, Trash2, Upload } from 'lucide-react';
 import { getMemories, resetData } from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import { SkeletonCard } from '../components/Skeleton';
+import EmptyState from '../components/EmptyState';
+import ErrorState from '../components/ErrorState';
 
 export default function MemoryTimeline() {
+  const navigate = useNavigate();
   const [memories, setMemories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     loadMemories();
@@ -25,11 +31,14 @@ export default function MemoryTimeline() {
   };
 
   const loadMemories = async () => {
+    setLoading(true);
+    setError(false);
     try {
       const data = await getMemories();
       setMemories(data);
     } catch (error) {
       console.error(error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -37,8 +46,35 @@ export default function MemoryTimeline() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div className="flex justify-between items-end">
+          <div>
+            <div className="h-8 bg-slate-700/50 rounded w-72 mb-2 animate-pulse"></div>
+            <div className="h-4 bg-slate-700/50 rounded w-96 animate-pulse"></div>
+          </div>
+        </div>
+        <div className="space-y-6">
+          {[...Array(3)].map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto space-y-8">
+        <header>
+          <div className="flex items-center gap-3 mb-2">
+            <Brain className="w-8 h-8 text-indigo-400" />
+            <h1 className="text-3xl font-bold text-white">Hindsight Memory</h1>
+          </div>
+          <p className="text-muted-text">
+            Watch as the AI agent <strong>Retains</strong> insights over time, <strong>Recalls</strong> past feedback, and <strong>Reflects</strong> on trends.
+          </p>
+        </header>
+        <ErrorState onRetry={loadMemories} />
       </div>
     );
   }
@@ -65,11 +101,16 @@ export default function MemoryTimeline() {
       </header>
 
       {memories.length === 0 ? (
-        <div className="glass-panel p-12 text-center">
-          <Brain className="w-12 h-12 text-slate-500 mx-auto mb-4 opacity-50" />
-          <h3 className="text-xl font-medium text-slate-300">No memories formed yet.</h3>
-          <p className="text-slate-500 mt-2">Upload feedback to start building the Hindsight timeline.</p>
-        </div>
+        <EmptyState
+          icon={<Brain className="w-16 h-16" />}
+          title="No memories formed yet"
+          description="Upload feedback batches to start building the Hindsight timeline and track insights over time."
+          action={{
+            label: "Upload Feedback",
+            onClick: () => navigate('/upload'),
+            icon: <Upload className="w-4 h-4" />
+          }}
+        />
       ) : (
         <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-indigo-500/30 before:to-transparent">
           {memories.map((memory, index) => (

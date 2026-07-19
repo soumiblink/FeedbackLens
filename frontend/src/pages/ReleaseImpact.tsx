@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { GitCompare, AlertCircle, TrendingUp, TrendingDown, Minus, Calendar, Package, Award } from 'lucide-react';
 import { getReleaseImpact, compareReleases } from '../services/api';
-import { SkeletonMetricCard } from '../components/Skeleton';
 import EmptyState from '../components/EmptyState';
 import ErrorState from '../components/ErrorState';
 
@@ -573,21 +572,6 @@ export default function ReleaseImpact() {
               </div>
             </div>
           </div>
-        </motion.div>
-      )}
-
-      {/* Empty State */}
-      {batches.length < 2 && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-panel p-12 text-center"
-        >
-          <GitCompare className="w-16 h-16 text-slate-500 mx-auto mb-4 opacity-50" />
-          <h3 className="text-xl font-medium text-slate-300 mb-2">Not Enough Data</h3>
-          <p className="text-slate-500">
-            Upload at least two feedback batches to compare release impact.
-          </p>
         </motion.div>
       )}
     </div>

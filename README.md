@@ -259,7 +259,7 @@ Although FeedbackLens is presented as a Product Management case study, I also bu
 **AI & Machine Learning**
 
 * TF-IDF + Logistic Regression for sentiment classification
-* OpenAI API for topic extraction, complaint detection, and feature request identification
+* Groq API for topic extraction, complaint detection, and feature request identification
 * Deterministic scoring model for opportunity prioritization
 
 The technology choices were intentionally lightweight. The focus of this project was not exploring complex infrastructure, but building a functional product that demonstrates product thinking, evidence-driven decision making, and end-to-end workflow design.
@@ -272,7 +272,7 @@ The technology choices were intentionally lightweight. The focus of this project
 
 * Python 3.10+
 * Node.js 18+
-* OpenAI API Key
+* Groq API Key
 
 ### Backend
 
@@ -290,7 +290,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # Create .env
-OPENAI_API_KEY=your_api_key
+GROQ_API_KEY=your_groq_api_key
 
 python main.py
 ```

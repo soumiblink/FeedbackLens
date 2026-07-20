@@ -2,46 +2,39 @@
 
 **An AI-assisted product intelligence workspace that helps Product Managers turn customer feedback into confident product decisions.**
 
-Every product team collects customer feedback, but collecting it is rarely the challenge. The real challenge is understanding what customers are consistently struggling with, deciding which problems deserve attention, and measuring whether product decisions actually improve the user experience.
+Every product team collects customer feedback, but collecting it is rarely the challenge. The real challenge is understanding what customers are consistently struggling with, deciding which problems deserve attention, and measuring whether those decisions actually improve the user experience.
 
-FeedbackLens is a Product Management project built around that workflow. It transforms raw customer feedback into structured product insights, helping Product Managers investigate recurring issues, prioritize opportunities, document decisions, validate releases, and track product health from a single workspace. Rather than replacing product judgment, FeedbackLens is designed to organize evidence so that decisions are more transparent, consistent, and easier to justify.
+FeedbackLens transforms raw customer feedback into structured insights. It helps Product Managers investigate recurring issues, prioritize opportunities, document decisions, validate releases, and track product health—all from a single workspace. Rather than automating judgment, it organizes evidence so decisions are more transparent and easier to justify.
 
 
 ## The Problem
 
-Customer feedback is one of the most valuable inputs into product strategy, yet it is often scattered across support tickets, app reviews, surveys, community forums, and customer interviews. While these sources capture what users experience, turning thousands of individual comments into actionable product decisions remains a largely manual process.
+Customer feedback is one of the most valuable inputs into product strategy, yet it's scattered across support tickets, app reviews, surveys, forums, and interviews. Turning thousands of individual comments into actionable decisions remains largely manual.
 
-Product Managers need to identify recurring problems, understand which issues affect the largest number of customers, balance competing requests, and justify prioritization decisions with evidence. In practice, this often means switching between spreadsheets, dashboards, and notes while manually searching for patterns.
+Product Managers need to identify recurring problems, understand which issues affect the most customers, balance competing requests, and justify prioritization with evidence. In practice, this means switching between spreadsheets, dashboards, and notes while manually searching for patterns.
 
-Most feedback tools focus on collecting or analyzing comments. Few support the complete decision-making workflow that follows—moving from raw feedback to prioritized opportunities, documented decisions, release validation, and continuous product improvement.
+Most feedback tools focus on collection or analysis. Few support the complete workflow—moving from raw feedback to prioritized opportunities, documented decisions, release validation, and continuous improvement.
 
-FeedbackLens was designed to bridge that gap by treating customer feedback not as isolated comments, but as evidence that supports every stage of the product decision process.
-
-
-## Product Approach
-
-FeedbackLens is built around a simple principle: every important product decision should be supported by customer evidence.
-
-Instead of treating feedback as individual comments, the platform organizes customer signals into a structured product workflow. Similar issues are grouped into opportunities, opportunities are prioritized using transparent scoring signals, and each decision remains connected to the customer feedback that supports it.
-
-The objective is not to automate product management. Prioritization, trade-offs, and roadmap decisions remain the responsibility of the Product Manager. FeedbackLens provides the context, evidence, and historical record needed to make those decisions with greater confidence.
+FeedbackLens bridges that gap by treating feedback not as isolated comments, but as evidence supporting every stage of the decision process.
 
 
-## Product Workflow
+## How It Works
 
-FeedbackLens follows the same workflow a Product Manager would use when evaluating customer feedback.
+FeedbackLens follows the same workflow Product Managers already use, replacing scattered spreadsheets with a structured workspace.
 
-1. **Collect Feedback** – Import customer feedback from surveys, support tickets, app reviews, or other sources into a single workspace.
+**1. Collect Feedback** – Import feedback from surveys, support tickets, app reviews, or other sources.
 
-2. **Identify Patterns** – Analyze feedback to understand sentiment, recurring topics, complaints, and feature requests. Similar feedback is grouped into opportunities instead of remaining as isolated comments.
+**2. Identify Patterns** – Analyze sentiment, recurring topics, complaints, and feature requests. Similar issues are grouped into opportunities.
 
-3. **Prioritize Opportunities** – Rank opportunities using transparent signals such as customer frequency, complaint rate, sentiment impact, and confidence. This helps distinguish widespread product problems from isolated feedback.
+**3. Prioritize Opportunities** – Rank opportunities using transparent signals: customer frequency, complaint rate, sentiment impact, and confidence.
 
-4. **Make Product Decisions** – Investigate supporting evidence, document decision rationale, and track the status of each opportunity from investigation through implementation.
+**4. Make Decisions** – Investigate supporting evidence, document rationale, and track status from investigation through implementation.
 
-5. **Measure Outcomes** – Compare customer feedback before and after releases to understand whether product changes reduced customer pain points and improved the overall product experience.
+**5. Measure Outcomes** – Compare feedback before and after releases to validate whether changes reduced customer pain points.
 
-Rather than treating customer feedback as a reporting exercise, FeedbackLens turns it into a continuous product decision workflow.
+```text
+Collect Feedback → Identify Patterns → Prioritize → Decide → Validate → Monitor
+```
 
 
 ## Application Screenshots
@@ -92,177 +85,103 @@ Track releases and visualize how customer feedback evolves across multiple produ
 ## Core Capabilities
 
 ### Feedback Intelligence
+Transforms unstructured customer feedback into structured insights through sentiment analysis, topic extraction, complaint detection, and feature request identification.
 
-Customer feedback is transformed into structured product data through sentiment analysis, topic extraction, complaint detection, and feature request identification. Instead of reading every individual comment, Product Managers can quickly understand the themes emerging across large volumes of feedback.
-
-### Opportunity Discovery & Prioritization
-
-Recurring customer problems are automatically grouped into product opportunities and ranked using deterministic signals such as frequency, complaint rate, and sentiment impact. This helps teams focus on problems with the greatest customer impact instead of reacting to isolated requests.
-
-### Evidence-Based Decision Making
-
-Every opportunity includes supporting customer evidence, allowing Product Managers to investigate issues before making prioritization decisions. Decisions can be documented alongside the evidence that influenced them, creating a transparent record of product thinking over time.
-
-### Roadmap & Release Validation
-
-Validated opportunities can be promoted into roadmap initiatives and tracked throughout delivery. After each release, FeedbackLens compares customer feedback before and after deployment, helping teams understand whether product changes actually improved the customer experience.
-
-### Product Monitoring
-
-The platform provides a consolidated view of overall product health, customer segments, release history, and executive summaries. This allows Product Managers to monitor trends over time without switching between multiple reporting tools.
-
-
-
-## Product Decisions
-
-Throughout the project, I intentionally prioritized features that support a Product Manager's day-to-day workflow rather than adding capabilities simply because they were technically interesting.
-
-For example, I introduced an evidence-backed opportunity prioritization system before building advanced filtering because understanding **what deserves attention next** is a more valuable product problem than making existing data easier to browse.
-
-Similarly, the Decision Center was designed to capture the reasoning behind product decisions, not just their outcomes. Product decisions often outlive the people who made them, so preserving context becomes just as important as tracking implementation status.
-
-I also chose to keep prioritization transparent. Rather than relying entirely on AI-generated recommendations, FeedbackLens combines deterministic signals such as customer frequency, complaint rate, and sentiment with AI-assisted analysis. This makes every prioritization decision easier to understand, explain, and challenge.
-
-These decisions reflect the philosophy behind the product: AI should accelerate product thinking, not replace it.
-
-
-
-## How FeedbackLens Works
-
-FeedbackLens follows the same workflow that many Product Managers already use, but replaces scattered spreadsheets and manual analysis with a single, structured workspace.
-
-A Product Manager starts by importing customer feedback collected from sources such as support tickets, surveys, app reviews, or user interviews. FeedbackLens processes each response, identifies recurring themes, detects complaints and feature requests, and groups similar feedback into opportunities.
-
-Instead of reviewing hundreds of individual comments, the PM sees a prioritized list of customer problems backed by real evidence. Each opportunity includes the supporting feedback, customer sentiment, complaint frequency, and priority signals, making it easier to understand both the scale and the impact of an issue.
-
-Once an opportunity has been investigated, it can move into the Decision Center, where product decisions are documented together with the evidence that justified them. Validated opportunities can then be promoted into the Roadmap Planner, allowing customer feedback to flow naturally into product planning.
-
-After a release is shipped, FeedbackLens compares customer feedback collected before and after the release to measure whether the intended outcome was achieved. Finally, Product Health dashboards and Executive Reports provide an ongoing view of product performance and customer sentiment, helping teams continuously evaluate whether their product decisions are improving the customer experience.
-
-
-## Core Product Workflow
-
-FeedbackLens is designed around the workflow a Product Manager follows after receiving customer feedback—not around isolated features.
-
-```text
-Collect Feedback
-        ↓
-Understand Customer Problems
-        ↓
-Identify Product Opportunities
-        ↓
-Prioritize What Matters Most
-        ↓
-Investigate Supporting Evidence
-        ↓
-Document Product Decisions
-        ↓
-Plan the Roadmap
-        ↓
-Validate Release Outcomes
-        ↓
-Monitor Product Health
-```
-
-Instead of jumping between spreadsheets, dashboards, support tools, and documents, FeedbackLens keeps the entire decision-making process in one place. Every opportunity can be traced back to the original customer feedback, making prioritization more transparent and evidence-driven.
-
-
-
-## Key Product Capabilities
-
-### Feedback Intelligence
-
-Transform unstructured customer feedback into structured product insights. FeedbackLens analyzes sentiment, identifies recurring topics, detects complaints and feature requests, and organizes customer feedback into information that Product Managers can act on.
-
-### Opportunity Prioritization
-
-Recurring customer problems are consolidated into ranked product opportunities using transparent prioritization signals, including customer frequency, complaint volume, sentiment impact, and confidence. The goal is to help Product Managers focus on problems with the highest customer impact instead of reacting to isolated requests.
+### Opportunity Discovery
+Groups recurring problems into ranked opportunities using frequency, complaint rate, and sentiment impact—helping teams focus on issues with the greatest customer impact.
 
 ### Decision Management
-
-Every prioritization decision can be documented alongside the supporting customer evidence. This creates a shared decision history that explains not only *what* was decided, but *why* it was decided.
+Documents every prioritization decision alongside supporting evidence, creating a transparent record of what was decided and why.
 
 ### Roadmap Planning
-
-Validated opportunities can be promoted into roadmap initiatives and tracked through their lifecycle—from Backlog to Released. This creates a direct connection between customer feedback and product execution.
+Promotes validated opportunities into roadmap initiatives tracked from Backlog to Released, connecting customer feedback directly to product execution.
 
 ### Release Validation
-
-Measure whether product releases achieved their intended outcome by comparing customer feedback before and after each release. Rather than assuming success, Product Managers can validate improvements using changes in customer sentiment, complaint trends, and recurring topics.
+Compares feedback before and after each release to measure whether changes achieved their intended outcome.
 
 ### Product Health Monitoring
-
-Monitor the overall health of the product through customer sentiment, complaint trends, opportunity backlog, customer segments, and release performance. This provides a single view of product health instead of relying on multiple disconnected reports.
+Provides a consolidated view of sentiment, complaint trends, opportunity backlog, customer segments, and release performance.
 
 
 
 ## Product Design Decisions
 
-Building FeedbackLens required making deliberate product trade-offs rather than simply adding more features. Throughout the project, I focused on designing a workflow that supports how Product Managers actually make decisions.
+Throughout the project, I prioritized features that support a Product Manager's workflow rather than adding capabilities because they were technically interesting.
 
-One of the earliest decisions was to prioritize **evidence over automation**. Instead of asking AI to recommend what should be built next, FeedbackLens surfaces customer signals such as frequency, complaint rate, sentiment, and supporting feedback, allowing Product Managers to make the final prioritization based on both data and business context.
+**Evidence over automation.** Instead of asking AI to recommend what to build next, FeedbackLens surfaces signals like frequency, complaint rate, and sentiment—letting Product Managers make the final call based on data and business context.
 
-Another important decision was to treat every opportunity as traceable. Product decisions should never become black boxes. Every prioritized opportunity can be investigated, linked back to the original customer feedback, documented in the Decision Center, promoted into the roadmap, and later evaluated after release. This creates a continuous record of **problem → decision → outcome**.
+**Traceability matters.** Every opportunity can be investigated, linked back to original feedback, documented in the Decision Center, promoted into the roadmap, and evaluated after release. This creates a continuous record: problem → decision → outcome.
 
-I also intentionally avoided adding features that increased complexity without improving the core workflow. The objective was not to build the largest feedback platform, but to build a focused workspace that helps Product Managers move from customer feedback to product decisions with greater confidence.
+**Transparent prioritization.** Rather than relying entirely on AI recommendations, the system combines deterministic signals with AI-assisted analysis. This makes every decision easier to understand, explain, and challenge.
+
+**Focus beats features.** I intentionally avoided adding complexity that didn't improve the core workflow. The goal was a focused workspace that helps Product Managers move from feedback to decisions with confidence.
 
 
 
 ## How I Would Measure Success
 
-If FeedbackLens were launched as a real product, I would evaluate it using product outcomes rather than feature usage alone.
+If FeedbackLens were a real product, I'd evaluate it using outcomes rather than feature usage.
 
 **Adoption**
-
-* Number of active Product Managers using the platform each week.
-* Percentage of customer feedback processed through FeedbackLens instead of manual workflows.
+- Active Product Managers using the platform weekly
+- Customer feedback processed through FeedbackLens vs. manual workflows
 
 **Decision Quality**
-
-* Percentage of roadmap initiatives linked to supporting customer evidence.
-* Average time required to investigate and prioritize a product opportunity.
+- Roadmap initiatives linked to supporting customer evidence
+- Time required to investigate and prioritize an opportunity
 
 **Product Outcomes**
-
-* Change in customer sentiment after releases.
-* Reduction in recurring complaints for prioritized opportunities.
-* Percentage of releases that demonstrate measurable improvement based on customer feedback.
+- Change in customer sentiment after releases
+- Reduction in recurring complaints for prioritized opportunities
+- Releases demonstrating measurable improvement
 
 **User Experience**
+- Time from raw feedback to documented decision
+- Product Manager satisfaction with the prioritization workflow
 
-* Time taken to move from raw feedback to a documented product decision.
-* Satisfaction of Product Managers with the prioritization workflow.
 
-These metrics focus on whether FeedbackLens helps teams make better product decisions, rather than simply measuring clicks or page views.
+## Future Product Roadmap
+
+If FeedbackLens were to evolve beyond a portfolio project, these investments would strengthen the product experience and enable broader adoption.
+
+### Short Term
+- **Jira integration** – Sync opportunities directly to Jira issues
+- **Slack notifications** – Alert teams when high-priority feedback arrives
+- **Duplicate feedback detection** – Automatically merge similar feedback items
+- **Saved custom filters** – Save frequently used views for faster access
+- **Export functionality** – Export insights and reports to CSV or PDF
+
+### Mid Term
+- **User authentication** – Enable multi-user workspaces with role-based access
+- **Team collaboration** – Add comments, mentions, and shared decision workflows
+- **Custom prioritization frameworks** – Support RICE, ICE, MoSCoW, and custom scoring models
+- **Product analytics integrations** – Connect with Mixpanel, Amplitude, or Heap to correlate feedback with usage data
+- **API access** – Allow external tools to push feedback programmatically
+
+### Long Term
+- **Multi-product workspaces** – Manage feedback across multiple product lines
+- **Release impact prediction** – Use historical patterns to forecast release outcomes before shipping
+- **Voice of Customer analytics** – Analyze sentiment trends across channels, time periods, and customer cohorts
+- **Continuous customer health monitoring** – Real-time alerts when product health degrades
+- **LLM-powered insights** – Generate executive summaries and suggested actions automatically
 
 
 
 ## Technology Stack
 
-Although FeedbackLens is presented as a Product Management case study, I also built the working prototype to validate the product concept.
+FeedbackLens is presented as a Product Management case study, but I built a working prototype to validate the product concept.
 
 **Frontend**
-
-* React
-* TypeScript
-* Tailwind CSS
-* Vite
-* Framer Motion
-* Recharts
+- React, TypeScript, Tailwind CSS
+- Vite, Framer Motion, Recharts
 
 **Backend**
-
-* FastAPI
-* SQLAlchemy
-* SQLite
+- FastAPI, SQLAlchemy, SQLite
 
 **AI & Machine Learning**
-
-* TF-IDF + Logistic Regression for sentiment classification
-* Groq API for topic extraction, complaint detection, and feature request identification
-* Deterministic scoring model for opportunity prioritization
-
-The technology choices were intentionally lightweight. The focus of this project was not exploring complex infrastructure, but building a functional product that demonstrates product thinking, evidence-driven decision making, and end-to-end workflow design.
+- TF-IDF + Logistic Regression for sentiment classification
+- Groq API for topic extraction, complaint detection, and feature request identification
+- Deterministic scoring for opportunity prioritization
 
 
 
@@ -318,25 +237,22 @@ The frontend will start on **http://localhost:5173**
 
 ### Demo Workflow
 
-1. Upload a customer feedback dataset.
-2. Review the generated insights in the Feedback Inbox.
-3. Explore prioritized opportunities.
-4. Investigate supporting evidence.
-5. Document a product decision.
-6. Move validated opportunities into the roadmap.
-7. Compare releases using Release Impact Analysis.
-8. Monitor Product Health over time.
-
+1. Upload a customer feedback dataset
+2. Review generated insights in the Feedback Inbox
+3. Explore prioritized opportunities
+4. Investigate supporting evidence
+5. Document a product decision
+6. Move validated opportunities into the roadmap
+7. Compare releases using Release Impact Analysis
+8. Monitor Product Health over time
 
 
 ## Portfolio Context
 
-FeedbackLens was built as a Product Management portfolio project to explore how customer feedback can be transformed into structured product decisions.
+FeedbackLens is a Product Management portfolio project exploring how customer feedback can be transformed into structured decisions.
 
-Rather than focusing on individual features, I approached the project by designing an end-to-end workflow that reflects how Product Managers work in practice—from identifying customer problems to prioritizing opportunities, documenting decisions, planning roadmap initiatives, and validating releases.
+Rather than focusing on individual features, I designed an end-to-end workflow reflecting how Product Managers work in practice—from identifying customer problems to prioritizing opportunities, documenting decisions, planning initiatives, and validating releases.
 
-Throughout the project, I made intentional trade-offs to keep the product focused. Instead of maximizing the number of features, I prioritized clarity, traceability, and evidence-based decision making. Every major capability exists to support a specific step in the product lifecycle.
+I made intentional trade-offs to keep the product focused. Instead of maximizing features, I prioritized clarity, traceability, and transparent decision-making. Every capability exists to support a specific step in the product lifecycle.
 
-While the current version is a working prototype, there are many directions I would explore in a production environment, including collaboration features, integrations with support platforms, user authentication, richer analytics, and longitudinal product health tracking.
-
-The goal of this project is not to present a perfect product, but to demonstrate how I think about product strategy, prioritization, user workflows, and building solutions around real customer problems.
+If this were a production environment, I'd add collaboration features, support platform integrations, user authentication, richer analytics, and longitudinal health tracking. But as a portfolio project, the goal is to demonstrate how I think about product strategy, prioritization, user workflows, and building solutions around real customer problems.

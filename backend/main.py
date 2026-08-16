@@ -16,15 +16,21 @@ app = FastAPI(
 )
 
 # CORS configuration for production and local development
+allowed_origins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
+    "http://localhost:3000"
+]
+
+# Add production origins from environment variable
+production_origins = os.environ.get("ALLOWED_ORIGINS", "")
+if production_origins:
+    allowed_origins.extend([origin.strip() for origin in production_origins.split(",") if origin.strip()])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://customer-feedback-analytics-ai.vercel.app", 
-        "http://localhost:5173", 
-        "http://localhost:5174", 
-        "http://localhost:5175", 
-        "http://localhost:3000"
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
